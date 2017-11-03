@@ -77,6 +77,11 @@ before_script:
  - mkdir -p $HOME/.gramps/gramps50/plugins
 # Copy Addons to Gramps Addons directory
  - cp -r * $HOME/.gramps/gramps50/plugins/
+ - cd $HOME/.gramps/gramps50/plugins/
+# Make sure the addons at least compile
+ - python3 -m compileall *
+ - cd $TRAVIS_BUILD_DIR
+
 # Create css directory used by webstuff
  - mkdir -p $HOME/.gramps/css
 
@@ -90,6 +95,9 @@ script:
 # gramps, because there is some test code in that directory.
 
  -  GRAMPS_RESOURCES=$TRAVIS_BUILD_DIR/../gramps PYTHONPATH=$TRAVIS_BUILD_DIR/../gramps nosetests3 --exclude=DynamicWeb -vv
+
+# Run an abbreviated test on Gramps to make sure it can start with addons present
+ -  GRAMPS_RESOURCES=$TRAVIS_BUILD_DIR/../gramps PYTHONPATH=$TRAVIS_BUILD_DIR/../gramps nosetests3 --exclude=DynamicWeb -vv $TRAVIS_BUILD_DIR/../gramps/gramps/plugins/test/exports_test.py
 
 # give an error for any trailing whitespace
  - if git --no-pager grep --color -n --full-name '[ 	]$' -- \*.py; then
